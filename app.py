@@ -68,25 +68,19 @@ def add_serial_key():
     serial_keys = SerialKey.query.all()
     
     return render_template('admin.html', serial_keys=serial_keys, success_message='Serial key added successfully')
-
 @app.route('/verifySerialKey', methods=['POST'])
 def verify_serial_key():
-    serial_key = request.form.get('key')
-    h_captcha_response = request.form.get('h-captcha-response')
+    key = request.form.get('key')
+    if key is None:
+        return render_template('error.html', message='Key not found in request'), 400
 
-    verification_url = "https://hcaptcha.com/siteverify"
-    verification_data = {
-        'secret': HCAPTCHA_SECRET_KEY,
-        'response': h_captcha_response
-    }
-    response = requests.post(verification_url, data=verification_data)
-    verification_result = response.json().get('success', False)
-
-    if verification_result:
-     
-        return jsonify({'verification_result': True, 'serial_key': serial_key})
+    serial_key = SerialKey.query.filter_by(key=key).first()
+    if serial_key:
+        verification_result = True
     else:
-        return jsonify({'verification_result': False, 'message': 'Failed to verify hCaptcha'})
+        verification_result = False
+
+    return render_template('verification_result.html', verified=verification_result)
 
 
 
