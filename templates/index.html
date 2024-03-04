@@ -17,10 +17,12 @@
         }
         form {
             background-color: #fff;
-            padding: 20px;
+            padding: 40px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
+            max-width: 400px;
+            width: 100%;
         }
         h1 {
             margin-bottom: 20px;
@@ -30,21 +32,27 @@
             font-weight: bold;
             color: #555;
             margin-right: 10px;
+            display: block;
+            margin-bottom: 10px;
         }
         input[type="text"] {
-            padding: 10px;
+            padding: 15px;
             border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-right: 10px;
-            width: 200px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
         }
         button[type="submit"] {
-            padding: 10px 20px;
+            padding: 15px 30px;
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
         }
         button[type="submit"]:hover {
             background-color: #45a049;
@@ -59,7 +67,7 @@
     <form action="/verifySerialKey" method="POST">
         <label for="serialKey">Enter Serial Key:</label>
         <input type="text" id="serialKey" name="key" required>
-        <button type="submit">Verify Serial Key</button>
+        <button type="submit">Verify</button>
         <p id="verificationResult">
             {% if verification_result is defined %}
                 {% if verification_result %}

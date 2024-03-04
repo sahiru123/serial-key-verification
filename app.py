@@ -1,16 +1,17 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
-from flask_admin import Admin  # Import the Admin class
+from flask_admin import Admin  
 from flask_admin.contrib.sqla import ModelView
 from datetime import datetime
 from flask_migrate import Migrate
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Change this to a secret key for your application
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///serial_keys.db'  # SQLite database file
+app.secret_key = 'your_secret_key' 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///serial_keys.db' 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-# Define a model for serial keys
+
+
 class SerialKey(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(50), unique=True, nullable=False)
@@ -21,7 +22,7 @@ db.create_all()
 def index():
     if 'username' in session:
         return render_template('index.html', username=session['username'])
-    return render_template('index.html')  # Allow unauthenticated users to access the homepage
+    return render_template('index.html') 
 
 @app.route('/admin')
 def admin_dashboard():
@@ -57,9 +58,7 @@ def add_serial_key():
 
     existing_key = SerialKey.query.filter_by(key=key).first()
     if existing_key:
-        # Fetch all serial keys again
         serial_keys = SerialKey.query.all()
-        # Render the admin dashboard template with the existing error message and the list of serial keys
         return render_template('admin.html', serial_keys=serial_keys, error_message='Key already exists')
     
     new_key = SerialKey(key=key)
@@ -72,17 +71,23 @@ def add_serial_key():
 
 @app.route('/verifySerialKey', methods=['POST'])
 def verify_serial_key():
-    key = request.form.get('key')
-    if key is None:
-        return render_template('error.html', message='Key not found in request'), 400
+    serial_key = request.form.get('key')
+    h_captcha_response = request.form.get('h-captcha-response')
 
-    serial_key = SerialKey.query.filter_by(key=key).first()
-    if serial_key:
-        verification_result = True
+    verification_url = "https://hcaptcha.com/siteverify"
+    verification_data = {
+        'secret': HCAPTCHA_SECRET_KEY,
+        'response': h_captcha_response
+    }
+    response = requests.post(verification_url, data=verification_data)
+    verification_result = response.json().get('success', False)
+
+    if verification_result:
+     
+        return jsonify({'verification_result': True, 'serial_key': serial_key})
     else:
-        verification_result = False
+        return jsonify({'verification_result': False, 'message': 'Failed to verify hCaptcha'})
 
-    return render_template('verification_result.html', verified=verification_result)
 
 
 @app.route('/admin/deleteSerialKey/<int:key_id>', methods=['GET', 'POST'])
@@ -109,7 +114,6 @@ def delete_all_data():
         db.session.rollback()
         print("An error occurred while deleting data:", str(e))
 
-# Example route to trigger the deletion of all data
 @app.route('/delete_all_data')
 def trigger_delete_all_data():
     delete_all_data()

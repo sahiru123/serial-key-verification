@@ -152,7 +152,10 @@
         }
     </script>
     {% if success_message %}
-    <meta http-equiv="refresh" content="4; URL=/admin">
+    <meta http-equiv="refresh" content="3; URL=/admin">
+    {% endif %}
+    {% if error_message %}
+    <meta http-equiv="refresh" content="3; URL=/admin">
     {% endif %}
 </body>
 
