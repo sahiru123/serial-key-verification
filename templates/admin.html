@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+            color: #333;
+        }
+
+        form {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+            color: #555;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+            width: 200px;
+        }
+
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 12px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        .success-message {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .error-message {
+            background-color: #f44336;
+            color: white;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .delete-icon {
+            color: red;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="/admin/addSerialKey" method="post">
+        <label for="serialKey">Serial Key:</label>
+        <input type="text" id="serialKey" name="key" required>
+        <button type="submit">Add Serial Key</button>
+    </form>
+
+    <!-- Success message section -->
+    {% if success_message %}
+    <p class="success-message">{{ success_message }}</p>
+    {% endif %}
+
+    <!-- Error message section -->
+    {% if error_message %}
+    <p class="error-message">{{ error_message }}</p>
+    {% endif %}
+    <table>
+        <thead>
+            <tr>
+                <th>Serial Key</th>
+                <th>Added Date</th>
+                <th>Action</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for serial_key in serial_keys %}
+            <tr>
+                <td>{{ serial_key.key }}</td>
+                <td>{{ serial_key.added_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td><i class="fas fa-trash-alt delete-icon" onclick="deleteSerialKey({{ serial_key.id }})"></i></td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        function deleteSerialKey(keyId) {
+            if (confirm('Are you sure you want to delete this serial key?')) {
+                fetch('/admin/deleteSerialKey/' + keyId, {
+                    method: 'POST'
+                })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+                        alert('Failed to delete serial key.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting serial key.');
+                });
+            }
+        }
+    </script>
+    {% if success_message %}
+    <meta http-equiv="refresh" content="4; URL=/admin">
+    {% endif %}
+</body>
+
+</html>

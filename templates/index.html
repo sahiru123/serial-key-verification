@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        label {
+            font-weight: bold;
+            color: #555;
+            margin-right: 10px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+            width: 200px;
+        }
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        #verificationResult {
+            margin-top: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <form action="/verifySerialKey" method="POST">
+        <label for="serialKey">Enter Serial Key:</label>
+        <input type="text" id="serialKey" name="key" required>
+        <button type="submit">Verify Serial Key</button>
+        <p id="verificationResult">
+            {% if verification_result is defined %}
+                {% if verification_result %}
+                    Serial key is valid.
+                {% else %}
+                    Serial key is not valid.
+                {% endif %}
+            {% endif %}
+        </p>
+    </form>
+</body>
+</html>
